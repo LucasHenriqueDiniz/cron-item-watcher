@@ -5,8 +5,8 @@ export function matchCsTradeItems(items: CsTradeItem[]): MatchedItem[] {
   const { watchTerms, maxPrice } = config.cs_trade;
   const results: MatchedItem[] = [];
 
-  // Filter items by price first for efficiency
-  const pricedItems = items.filter((item) => item.p <= maxPrice);
+  // Filter items by price first for efficiency (if maxPrice is specified)
+  const pricedItems = maxPrice === null ? items : items.filter((item) => item.p <= maxPrice);
 
   for (const item of pricedItems) {
     for (const term of watchTerms) {
@@ -18,7 +18,8 @@ export function matchCsTradeItems(items: CsTradeItem[]): MatchedItem[] {
           id: item.id,
           matchedTerm: term,
           itemUrl: `https://cs.trade/trade#${item.id}`,
-          // CS.Trade doesn't provide direct image URLs in API
+          // Generate image URL from CS.Trade class ID
+          imageUrl: `https://community.akamai.steamstatic.com/economy/image/class/${item.a}/${item.c}/330x192`,
         });
         break; // Once we match a term, no need to check other terms
       }
@@ -32,8 +33,8 @@ export function matchMannCoItems(items: MannCoItem[]): MatchedItem[] {
   const { watchTerms, maxPrice } = config.mann_co;
   const results: MatchedItem[] = [];
 
-  // Filter items by price first for efficiency
-  const pricedItems = items.filter((item) => item.price <= maxPrice);
+  // Filter items by price first for efficiency (if maxPrice is specified)
+  const pricedItems = maxPrice === null ? items : items.filter((item) => item.price <= maxPrice);
 
   for (const item of pricedItems) {
     for (const term of watchTerms) {
@@ -43,7 +44,7 @@ export function matchMannCoItems(items: MannCoItem[]): MatchedItem[] {
           name: item.name,
           price: item.price,
           id: item.id,
-          imageUrl: item.image,
+          imageUrl: `https://steamcommunity-a.akamaihd.net/economy/image/${item.image}/200fx200f`,
           itemUrl: `https://mannco.store/item/${item.url}`,
           matchedTerm: term,
         });

@@ -4,8 +4,27 @@ import { matchCsTradeItems, matchMannCoItems } from "./matcher.js";
 import { sendDiscordNotification } from "./notifier.js";
 import config from "./config.js";
 
+// Check for required environment variables
+function checkEnvironment() {
+  const requiredEnvVars = ["DISCORD_WEBHOOK_URL"];
+  const missing = requiredEnvVars.filter((varName) => !process.env[varName]);
+
+  if (missing.length > 0) {
+    console.error(`Missing required environment variables: ${missing.join(", ")}`);
+    return false;
+  }
+
+  return true;
+}
+
 async function main() {
   console.log("Starting item watcher...");
+
+  // Check environment variables before proceeding
+  if (!checkEnvironment()) {
+    console.error("Cannot proceed due to missing environment variables");
+    process.exit(1);
+  }
 
   // Load stored data
   const storedData = loadStoredData();

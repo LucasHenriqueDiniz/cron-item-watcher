@@ -20,37 +20,46 @@ export async function sendDiscordNotification(items: MatchedItem[]): Promise<voi
 
   console.log(`Sending notifications for ${items.length} items`);
 
-  // Group items by source
-  const csTradeItems = items.filter((item) => item.source === "cs_trade");
-  const mannCoItems = items.filter((item) => item.source === "mann_co");
+  // Send individual messages for each item
+  for (const item of items) {
+    try {
+      const source = item.source === "cs_trade" ? "CS.Trade" : "MannCo.Store";
 
-  // Create and send embeds for CS.Trade items
-  if (csTradeItems.length > 0) {
-    const embed = new MessageBuilder().setTitle("New CS.Trade Matches").setColor(0xff9900).setTimestamp();
+      const embed = new MessageBuilder()
+        .setTitle(`New Match: ${item.name}`)
+        .setDescription(`Found a new ${item.matchedTerm} item on ${source}!`)
+        .setColor(item.source === "cs_trade" ? 0xff9900 : 0x3498db)
+        .setTimestamp();
 
-    for (const item of csTradeItems) {
-      embed.addField(`${item.name} - $${item.price.toFixed(2)}`, `Matched term: ${item.matchedTerm}\n${item.itemUrl ? `[View Item](${item.itemUrl})` : ""}`);
-    }
+      // Add price field
+      embed.addField("Price", `$${item.price.toFixed(2)}`, true);
 
-    await hook.send(embed);
-  }
+      // Add matched term field
+      embed.addField("Matched Term", item.matchedTerm, true);
 
-  // Create and send embeds for MannCo items
-  if (mannCoItems.length > 0) {
-    const embed = new MessageBuilder().setTitle("New MannCo.Store Matches").setColor(0x3498db).setTimestamp();
-
-    for (const item of mannCoItems) {
-      embed.addField(`${item.name} - $${item.price.toFixed(2)}`, `Matched term: ${item.matchedTerm}\n${item.itemUrl ? `[View Item](${item.itemUrl})` : ""}`);
-
-      if (item.imageUrl) {
-        // Add thumbnail for first item only to avoid oversized embeds
-        if (!embed.embeds[0].thumbnail) {
-          embed.setThumbnail(item.imageUrl);
-        }
+      // Add view button (as a field with link)
+      if (item.itemUrl) {
+        embed.addField("View Item", `[Click here to view on ${source}](${item.itemUrl})`);
       }
-    }
 
-    await hook.send(embed);
+      // Set the item's image
+      if (item.imageUrl) {
+        embed.setThumbnail(item.imageUrl);
+        // Also set as main image for better visibility
+        embed.setImage(item.imageUrl);
+      }
+
+      // Add source info in footer
+      embed.setFooter(`Source: ${source} • Item ID: ${item.id}`);
+
+      await hook.send(embed);
+      console.log(`Sent notification for ${item.name}`);
+
+      // Add a small delay between messages to avoid rate limits
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    } catch (error) {
+      console.error(`Error sending notification for ${item.name}:`, error);
+    }
   }
 
   console.log("Notifications sent successfully");

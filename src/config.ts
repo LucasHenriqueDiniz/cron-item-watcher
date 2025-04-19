@@ -10,12 +10,12 @@ const defaultConfig: WatchConfig = {
   cs_trade: {
     enabled: true,
     watchTerms: ["Howl", "Dragon Lore", "Butterfly Knife"],
-    maxPrice: 15000,
+    maxPrice: 15000, // Set a price limit in dollars
   },
   mann_co: {
     enabled: true,
     watchTerms: ["Unusual", "Australium", "Strange"],
-    maxPrice: 10000,
+    maxPrice: null, // No price limit
   },
   discord: {
     username: "Item Watcher",

@@ -27,12 +27,12 @@ export interface WatchConfig {
   cs_trade: {
     enabled: boolean;
     watchTerms: string[];
-    maxPrice: number;
+    maxPrice: number | null;
   };
   mann_co: {
     enabled: boolean;
     watchTerms: string[];
-    maxPrice: number;
+    maxPrice: number | null;
   };
   discord: {
     username: string;
