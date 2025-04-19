@@ -10,7 +10,7 @@ const defaultConfig: WatchConfig = {
   cs_trade: {
     enabled: true,
     watchTerms: ["Howl", "Dragon Lore", "Butterfly Knife"],
-    maxPrice: 15000, // Set a price limit in dollars
+    maxPrice: 150000, // Set a price limit in dollars
   },
   mann_co: {
     enabled: true,
