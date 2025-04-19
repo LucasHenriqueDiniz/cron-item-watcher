@@ -29,6 +29,17 @@ async function main() {
   console.log(`Starting item watcher at ${new Date().toISOString()}`);
   console.log("========================================");
 
+  // Validate configuration before proceeding
+  if (!config) {
+    console.error("Configuration is missing or invalid!");
+    process.exit(1);
+  }
+
+  if (!config.cs_trade || !config.mann_co || !config.discord) {
+    console.error("Configuration is incomplete! Missing required sections.");
+    process.exit(1);
+  }
+
   // Log configuration
   console.log("Current configuration:", config);
   console.log(`- CS.Trade enabled: ${config?.cs_trade?.enabled}`);

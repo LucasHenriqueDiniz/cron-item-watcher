@@ -1,7 +1,7 @@
 name: Item Watcher
 on:
-  # schedule:
-  #   - cron: "*/30 * * * *" # Run every 30 minutes
+  schedule:
+    - cron: "*/30 * * * *" # Run every 30 minutes
   workflow_dispatch: # Allow manual triggering
 
 jobs:
@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write # Required for pushing commits
+    timeout-minutes: 15 # Add a timeout to prevent hanging jobs
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -35,6 +36,7 @@ jobs:
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           MANNCO_COOKIE: ${{ secrets.MANNCO_COOKIE }}
+          NODE_OPTIONS: "--max-old-space-size=4096" # Increase memory limit
 
       - name: Commit and push changes if any
         run: |

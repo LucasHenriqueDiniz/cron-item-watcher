@@ -120,86 +120,85 @@ async function setupApiInterception(page: puppeteer.Page, game: GameConfig, apiR
   // Setup request interception
   await page.setRequestInterception(true);
 
-  // Track which skip values we've seen to avoid duplicates
-  const processedSkipValues = new Set<string>();
-
-  // Listen for API responses
-  page.on("response", async (response) => {
-    const url = response.url();
-
-    // Only process items/get API calls
-    if (url.includes("https://mannco.store/items/get?") && url.includes(`game=${game.id}`)) {
-      try {
-        // Extract the skip parameter from the URL
-        const skipMatch = url.match(/skip=(\d+)/);
-        const skipValue = skipMatch ? skipMatch[1] : "unknown";
-
-        // Only process each skip value once
-        if (processedSkipValues.has(skipValue)) {
-          return;
-        }
-
-        processedSkipValues.add(skipValue);
-        console.log(`Processing API response for ${game.name} with skip=${skipValue}, URL: ${url.substring(0, 100)}...`);
-
-        // Get the response data
-        const responseText = await response.text();
-        const responseData = JSON.parse(responseText);
-
-        // Handle different response formats
-        let items: MannCoItem[] = [];
-        if (Array.isArray(responseData)) {
-          items = responseData;
-        } else if (typeof responseData === "object" && responseData.items && Array.isArray(responseData.items)) {
-          items = responseData.items;
-        } else {
-          console.warn(`Unexpected response format for skip=${skipValue}, cannot extract items`);
-          return;
-        }
-
-        console.log(`Extracted ${items.length} items from API call with skip=${skipValue}`);
-
-        // Add to our collection of responses
-        apiResponses.push(items);
-
-        // Log sample of first item
-        if (items.length > 0) {
-          const sample = JSON.stringify(items[0]).substring(0, 150) + "...";
-          console.log(`Sample item for skip=${skipValue}: ${sample}`);
-        }
-      } catch (error) {
-        console.error(`Error processing API response for ${game.name}:`, error);
-      }
-    }
+  // Add a timeout to ensure the function doesn't hang indefinitely
+  const timeoutPromise = new Promise<void>((_, reject) => {
+    setTimeout(() => {
+      reject(new Error(`API interception timeout for ${game.name} after 120 seconds`));
+    }, 120000); // 2-minute timeout
   });
 
-  // Allow all requests to continue
-  page.on("request", (request) => {
-    request.continue();
-  });
+  try {
+    // Track which skip values we've seen to avoid duplicates
+    const processedSkipValues = new Set<string>();
 
-  console.log(`Network interception set up for ${game.name}`);
-}
+    // Create a promise that will resolve once we've collected data
+    const interceptPromise = new Promise<void>((resolve) => {
+      // Listen for API responses
+      page.on("response", async (response) => {
+        const url = response.url();
 
-// Keep autoScroll as a utility function but don't call it
-// It can be useful in the future if needed
-async function autoScroll(page: puppeteer.Page): Promise<void> {
-  console.log("Auto-scrolling page to trigger lazy loading");
-  await page.evaluate(async () => {
-    await new Promise<void>((resolve) => {
-      let totalHeight = 0;
-      const distance = 100;
-      const timer = setInterval(() => {
-        const scrollHeight = document.body.scrollHeight;
-        window.scrollBy(0, distance);
-        totalHeight += distance;
+        // Only process items/get API calls
+        if (url.includes("https://mannco.store/items/get?") && url.includes(`game=${game.id}`)) {
+          try {
+            // Extract the skip parameter from the URL
+            const skipMatch = url.match(/skip=(\d+)/);
+            const skipValue = skipMatch ? skipMatch[1] : "unknown";
 
-        if (totalHeight >= scrollHeight) {
-          clearInterval(timer);
-          resolve();
+            // Only process each skip value once
+            if (processedSkipValues.has(skipValue)) {
+              return;
+            }
+
+            processedSkipValues.add(skipValue);
+            console.log(`Processing API response for ${game.name} with skip=${skipValue}, URL: ${url.substring(0, 100)}...`);
+
+            // Get the response data
+            const responseText = await response.text();
+            const responseData = JSON.parse(responseText);
+
+            // Handle different response formats
+            let items: MannCoItem[] = [];
+            if (Array.isArray(responseData)) {
+              items = responseData;
+            } else if (typeof responseData === "object" && responseData.items && Array.isArray(responseData.items)) {
+              items = responseData.items;
+            } else {
+              console.warn(`Unexpected response format for skip=${skipValue}, cannot extract items`);
+              return;
+            }
+
+            console.log(`Extracted ${items.length} items from API call with skip=${skipValue}`);
+
+            // Add to our collection of responses
+            apiResponses.push(items);
+
+            // Log sample of first item
+            if (items.length > 0) {
+              const sample = JSON.stringify(items[0]).substring(0, 150) + "...";
+              console.log(`Sample item for skip=${skipValue}: ${sample}`);
+            }
+
+            // If we've collected at least one page of data, resolve the promise
+            if (apiResponses.length > 0) {
+              resolve();
+            }
+          } catch (error) {
+            console.error(`Error processing API response for ${game.name}:`, error);
+          }
         }
-      }, 100);
+      });
     });
-  });
-  console.log("Auto-scrolling complete");
+
+    // Wait for either interception success or timeout
+    await Promise.race([interceptPromise, timeoutPromise]);
+  } catch (error) {
+    console.error(`Error during API interception for ${game.name}:`, error);
+  } finally {
+    // Allow all requests to continue
+    page.on("request", (request) => {
+      request.continue();
+    });
+
+    console.log(`Network interception set up for ${game.name}`);
+  }
 }

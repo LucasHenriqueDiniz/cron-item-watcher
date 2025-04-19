@@ -1,7 +1,6 @@
 import axios from "axios";
-import { CsTradeItem, MannCoItem, GAME_IDS } from "./types.js";
+import { CsTradeItem, MannCoItem } from "./types.js";
 import config from "./config.js";
-import * as cheerio from "cheerio"; // Add cheerio for web scraping
 import { scrapeMannCoItems } from "./mannco-scraper.js";
 
 export async function fetchCsTradeItems(): Promise<CsTradeItem[]> {
@@ -77,8 +76,40 @@ export async function fetchMannCoItems(): Promise<MannCoItem[]> {
   console.log("Fetching MannCo items using web scraping");
 
   try {
-    // Use web scraping approach to get items from all enabled games
-    const items = await scrapeMannCoItems();
+    console.log("Starting MannCo scraping...");
+
+    // Add retry mechanism for robustness
+    let retries = 0;
+    const maxRetries = 3;
+    let items: MannCoItem[] = [];
+
+    while (retries < maxRetries) {
+      try {
+        items = await scrapeMannCoItems();
+        if (items.length > 0) break;
+
+        retries++;
+        console.log(`Scraping attempt ${retries} produced 0 items. ${maxRetries - retries} retries left.`);
+
+        // Wait before retrying
+        if (retries < maxRetries) {
+          await new Promise((resolve) => setTimeout(resolve, 5000));
+        }
+      } catch (innerError) {
+        retries++;
+        console.error(`Scraping attempt ${retries} failed:`, innerError);
+
+        if (retries < maxRetries) {
+          console.log(`Will retry in 5 seconds. ${maxRetries - retries} retries left.`);
+          await new Promise((resolve) => setTimeout(resolve, 5000));
+        }
+      }
+    }
+
+    if (items.length === 0 && retries === maxRetries) {
+      console.warn(`MannCo scraping failed after ${maxRetries} attempts.`);
+    }
+
     return items;
   } catch (error) {
     console.error("Error fetching MannCo items:", error);
