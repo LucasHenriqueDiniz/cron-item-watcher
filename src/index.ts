@@ -15,6 +15,11 @@ function checkEnvironment() {
     return false;
   }
 
+  // Warn about optional but recommended variables
+  if (!process.env.MANNCO_COOKIE) {
+    console.warn("MANNCO_COOKIE environment variable not set. MannCo.store requests might be blocked by Cloudflare.");
+  }
+
   console.log("All required environment variables are present");
   return true;
 }
@@ -28,12 +33,25 @@ async function main() {
   console.log("Current configuration:");
   console.log(`- CS.Trade enabled: ${config.cs_trade.enabled}`);
   if (config.cs_trade.enabled) {
+    const enabledGames = Object.entries(config.cs_trade.watchGames)
+      .filter(([_, enabled]) => enabled)
+      .map(([game]) => game.toUpperCase());
+
+    console.log(`  * Watch games: ${enabledGames.join(", ")}`);
     console.log(`  * Watch terms: ${config.cs_trade.watchTerms.join(", ")}`);
+    console.log(`  * Ignore terms: ${config.cs_trade.ignoredTerms.join(", ")}`);
     console.log(`  * Max price: ${config.cs_trade.maxPrice !== null ? `$${config.cs_trade.maxPrice}` : "No limit"}`);
   }
+
   console.log(`- MannCo enabled: ${config.mann_co.enabled}`);
   if (config.mann_co.enabled) {
+    const enabledGames = Object.entries(config.mann_co.watchGames)
+      .filter(([_, enabled]) => enabled)
+      .map(([game]) => game.toUpperCase());
+
+    console.log(`  * Watch games: ${enabledGames.join(", ")}`);
     console.log(`  * Watch terms: ${config.mann_co.watchTerms.join(", ")}`);
+    console.log(`  * Ignore terms: ${config.mann_co.ignoredTerms.join(", ")}`);
     console.log(`  * Max price: ${config.mann_co.maxPrice !== null ? `$${config.mann_co.maxPrice}` : "No limit"}`);
   }
 

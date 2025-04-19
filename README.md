@@ -5,11 +5,12 @@ A GitHub Actions-based bot that watches for specific items on CS.Trade and MannC
 ## How It Works
 
 1. The bot runs on a schedule via GitHub Actions (every 30 minutes by default)
-2. It fetches the latest items from CS.Trade and MannCo.Store
-3. Compares the items with previously saved data to find new items
-4. Checks if any new items match your specified watch terms
-5. Sends notifications to your Discord channel via webhook for any matches
-6. Updates the stored data for the next run
+2. It fetches the latest items from CS.Trade using their API
+3. It scrapes MannCo.Store using a headless browser to bypass Cloudflare protection
+4. Compares the items with previously saved data to find new items
+5. Checks if any new items match your specified watch terms
+6. Sends notifications to your Discord channel via webhook for any matches
+7. Updates the stored data for the next run
 
 ## Setup
 
@@ -22,19 +23,43 @@ A GitHub Actions-based bot that watches for specific items on CS.Trade and MannC
 
 You can customize the following in `data/config.json`:
 
-- Watch terms for each site
-- Maximum price thresholds
-- Discord webhook appearance
+- CS.Trade settings:
+
+  - Games to watch: TF2, CS2, Dota 2, and Rust
+  - Watch terms and terms to ignore
+  - Maximum price threshold
+
+- MannCo settings:
+
+  - Games to watch: TF2, CS2, Dota 2, and Rust
+  - Watch terms and terms to ignore
+  - Maximum price threshold
+
+- Discord webhook appearance (username and avatar)
+
+## Game Support
+
+- **CS.Trade**: Supports TF2, CS2, Dota 2, and Rust items
+- **MannCo.Store**: Supports TF2, CS2, Dota 2, and Rust items
+
+## Web Scraping
+
+This application uses puppeteer for web scraping to access MannCo.store. This approach:
+
+1. Bypasses Cloudflare protection
+2. Works in GitHub Actions environment
+3. Doesn't require any cookies or manual intervention
+4. Supports all game categories on MannCo.store
 
 ## Known Issues
 
-### MannCo API Access
+### Server Resource Usage
 
-MannCo.Store uses CloudFlare protection which may block requests from GitHub Actions servers. If you see 403 errors in the logs, consider one of these solutions:
+Web scraping with a headless browser consumes more resources than simple API requests. If you're running this on a low-resource server, consider:
 
-1. **Proxy Service**: Set up a proxy server to relay requests
-2. **Self-hosted Runner**: Run GitHub Actions on your own server
-3. **Alternative Approach**: Create a separate application that runs on your local machine or a VPS
+1. Running less frequently (e.g., hourly instead of every 30 minutes)
+2. Limiting the number of games you're tracking
+3. Setting a page limit for item collection
 
 ### CS.Trade API Format
 

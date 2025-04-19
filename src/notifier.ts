@@ -24,9 +24,10 @@ export async function sendDiscordNotification(items: MatchedItem[]): Promise<voi
   for (const item of items) {
     try {
       const source = item.source === "cs_trade" ? "CS.Trade" : "MannCo.Store";
+      const gameDisplay = item.game ? ` (${item.game.toUpperCase()})` : "";
 
       const embed = new MessageBuilder()
-        .setTitle(`New Match: ${item.name}`)
+        .setTitle(`New Match: ${item.name}${gameDisplay}`)
         .setDescription(`Found a new ${item.matchedTerm} item on ${source}!`)
         .setColor(item.source === "cs_trade" ? 0xff9900 : 0x3498db)
         .setTimestamp();
@@ -36,6 +37,11 @@ export async function sendDiscordNotification(items: MatchedItem[]): Promise<voi
 
       // Add matched term field
       embed.addField("Matched Term", item.matchedTerm, true);
+
+      // Add game field if available
+      if (item.game) {
+        embed.addField("Game", item.game.toUpperCase(), true);
+      }
 
       // Add view button (as a field with link)
       if (item.itemUrl) {
@@ -50,7 +56,8 @@ export async function sendDiscordNotification(items: MatchedItem[]): Promise<voi
       }
 
       // Add source info in footer
-      embed.setFooter(`Source: ${source} • Item ID: ${item.id}`);
+      const footerText = item.game ? `Source: ${source} • Game: ${item.game.toUpperCase()} • Item ID: ${item.id}` : `Source: ${source} • Item ID: ${item.id}`;
+      embed.setFooter(footerText);
 
       await hook.send(embed);
       console.log(`Sent notification for ${item.name}`);

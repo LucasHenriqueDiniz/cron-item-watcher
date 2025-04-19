@@ -10,13 +10,29 @@ const defaultConfig: WatchConfig = {
   cs_trade: {
     enabled: true,
     watchTerms: ["Howl", "Dragon Lore", "Butterfly Knife"],
+    ignoredTerms: ["Graffiti", "Sticker", "Case"],
     maxPrice: 150000, // Set a price limit in dollars
+    watchGames: {
+      tf2: true, // 440
+      cs2: true, // 730
+      dota2: true, // 570
+      rust: true, // 252490
+    },
   },
+
   mann_co: {
     enabled: true,
     watchTerms: ["Unusual", "Australium", "Strange"],
+    ignoredTerms: ["Graffiti", "Case"],
     maxPrice: null, // No price limit
+    watchGames: {
+      tf2: true, // 440
+      cs2: true, // 730
+      dota2: true, // 570
+      rust: true, // 252490
+    },
   },
+
   discord: {
     username: "Item Watcher",
     avatarUrl: "https://i.imgur.com/oBPXx0D.png",

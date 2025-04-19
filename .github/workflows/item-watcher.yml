@@ -24,10 +24,17 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
+      - name: Install Chromium for Puppeteer
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends chromium-browser
+          echo "PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser" >> $GITHUB_ENV
+
       - name: Check for new items
         run: npm run start
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          MANNCO_COOKIE: ${{ secrets.MANNCO_COOKIE }}
 
       - name: Commit and push changes if any
         run: |
