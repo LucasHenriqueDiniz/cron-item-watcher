@@ -65,6 +65,12 @@ export async function fetchCsTradeItems(): Promise<CsTradeItem[]> {
  * Fetch MannCo items using web scraping
  */
 export async function fetchMannCoItems(): Promise<MannCoItem[]> {
+  // Check if configuration exists and is valid
+  if (!config?.mann_co?.watchGames) {
+    console.error("MannCo configuration is missing or incomplete");
+    return [];
+  }
+
   // Check if any games are enabled for MannCo
   const anyGameEnabled = Object.values(config.mann_co.watchGames).some((enabled) => enabled);
 
