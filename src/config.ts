@@ -46,7 +46,29 @@ const configPath = path.join(__dirname, "..", "data", "config.json");
 try {
   if (fs.existsSync(configPath)) {
     const configFile = fs.readFileSync(configPath, "utf8");
-    config = JSON.parse(configFile);
+    const loadedConfig = JSON.parse(configFile);
+
+    // Ensure required properties exist, use defaults if they don't
+    config = {
+      cs_trade: {
+        enabled: loadedConfig.cs_trade?.enabled ?? defaultConfig.cs_trade.enabled,
+        watchTerms: loadedConfig.cs_trade?.watchTerms ?? defaultConfig.cs_trade.watchTerms,
+        ignoredTerms: loadedConfig.cs_trade?.ignoredTerms ?? defaultConfig.cs_trade.ignoredTerms,
+        maxPrice: loadedConfig.cs_trade?.maxPrice ?? defaultConfig.cs_trade.maxPrice,
+        watchGames: loadedConfig.cs_trade?.watchGames ?? defaultConfig.cs_trade.watchGames,
+      },
+      mann_co: {
+        enabled: loadedConfig.mann_co?.enabled ?? defaultConfig.mann_co.enabled,
+        watchTerms: loadedConfig.mann_co?.watchTerms ?? defaultConfig.mann_co.watchTerms,
+        ignoredTerms: loadedConfig.mann_co?.ignoredTerms ?? defaultConfig.mann_co.ignoredTerms,
+        maxPrice: loadedConfig.mann_co?.maxPrice ?? defaultConfig.mann_co.maxPrice,
+        watchGames: loadedConfig.mann_co?.watchGames ?? defaultConfig.mann_co.watchGames,
+      },
+      discord: {
+        username: loadedConfig.discord?.username ?? defaultConfig.discord.username,
+        avatarUrl: loadedConfig.discord?.avatarUrl ?? defaultConfig.discord.avatarUrl,
+      },
+    };
     console.log("Configuration loaded from file");
   } else {
     config = defaultConfig;
