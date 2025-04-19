@@ -15,8 +15,8 @@ const defaultConfig: WatchConfig = {
     watchGames: {
       tf2: true, // 440
       cs2: true, // 730
-      dota2: true, // 570
-      rust: true, // 252490
+      dota2: false, // 570
+      rust: false, // 252490
     },
   },
 
@@ -27,9 +27,9 @@ const defaultConfig: WatchConfig = {
     maxPrice: null, // No price limit
     watchGames: {
       tf2: true, // 440
-      cs2: true, // 730
-      dota2: true, // 570
-      rust: true, // 252490
+      cs2: false, // 730
+      dota2: false, // 570
+      rust: false, // 252490
     },
   },
 
