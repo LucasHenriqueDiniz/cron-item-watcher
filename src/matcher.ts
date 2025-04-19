@@ -5,6 +5,12 @@ import config from "./config.js";
  * Check if the item belongs to one of the watched games for CS.Trade
  */
 function isWatchedCsTradedGame(appId: string): boolean {
+  // Defensive check for config structure
+  if (!config?.cs_trade?.watchGames) {
+    console.error("CS.Trade watchGames configuration is missing");
+    return false;
+  }
+
   const watchGames = config.cs_trade.watchGames;
   if (appId === GAME_IDS.tf2 && watchGames.tf2) return true;
   if (appId === GAME_IDS.cs2 && watchGames.cs2) return true;
@@ -32,6 +38,12 @@ function containsIgnoredTerm(name: string, ignoredTerms: string[]): boolean {
 }
 
 export function matchCsTradeItems(items: CsTradeItem[]): MatchedItem[] {
+  // Ensure config is properly structured
+  if (!config?.cs_trade?.watchTerms || !config?.cs_trade?.ignoredTerms) {
+    console.error("CS.Trade configuration is incomplete");
+    return [];
+  }
+
   const { watchTerms, ignoredTerms, maxPrice } = config.cs_trade;
   const results: MatchedItem[] = [];
 
@@ -83,6 +95,12 @@ export function matchCsTradeItems(items: CsTradeItem[]): MatchedItem[] {
 }
 
 export function matchMannCoItems(items: MannCoItem[]): MatchedItem[] {
+  // Ensure config is properly structured
+  if (!config?.mann_co?.watchTerms || !config?.mann_co?.ignoredTerms || !config?.mann_co?.watchGames) {
+    console.error("MannCo configuration is incomplete");
+    return [];
+  }
+
   const { watchTerms, ignoredTerms, maxPrice, watchGames } = config.mann_co;
   const results: MatchedItem[] = [];
 
