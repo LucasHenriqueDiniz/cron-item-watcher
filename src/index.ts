@@ -29,6 +29,17 @@ async function main() {
   console.log(`Starting item watcher at ${new Date().toISOString()}`);
   console.log("========================================");
 
+  // Handle command-line flags for running specific sources only
+  const args = process.argv.slice(2);
+  const csTradeOnly = args.includes("--cs-trade-only");
+  const manncoOnly = args.includes("--mannco-only");
+
+  // If neither flag is set, run both as usual
+  const runCsTrade = csTradeOnly || (!csTradeOnly && !manncoOnly);
+  const runMannCo = manncoOnly || (!csTradeOnly && !manncoOnly);
+
+  console.log(`Running modes: CS.Trade: ${runCsTrade ? "YES" : "NO"}, MannCo: ${runMannCo ? "YES" : "NO"}`);
+
   // Validate configuration before proceeding
   if (!config) {
     console.error("Configuration is missing or invalid!");
@@ -67,6 +78,7 @@ async function main() {
     }
 
     console.log(`  * Max price: ${config.cs_trade.maxPrice !== null ? `$${config.cs_trade.maxPrice}` : "No limit"}`);
+    console.log(`  * Min price: ${config.cs_trade.minPrice !== null ? `$${config.cs_trade.minPrice}` : "No limit"}`);
   }
 
   console.log(`- MannCo enabled: ${config?.mann_co?.enabled}`);
@@ -94,6 +106,7 @@ async function main() {
     }
 
     console.log(`  * Max price: ${config.mann_co.maxPrice !== null ? `$${config.mann_co.maxPrice}` : "No limit"}`);
+    console.log(`  * Min price: ${config.mann_co.minPrice !== null ? `$${config.mann_co.minPrice}` : "No limit"}`);
   }
 
   // Check environment variables before proceeding
@@ -111,7 +124,7 @@ async function main() {
     const newMatchedItems = [];
 
     // Process CS.Trade items if enabled
-    if (config?.cs_trade?.enabled) {
+    if (runCsTrade && config?.cs_trade?.enabled) {
       console.log("\n--- Processing CS.Trade items ---");
       try {
         const csTradeItems = await fetchCsTradeItems();
@@ -141,7 +154,7 @@ async function main() {
     }
 
     // Process MannCo items if enabled
-    if (config?.mann_co?.enabled) {
+    if (runMannCo && config?.mann_co?.enabled) {
       console.log("\n--- Processing MannCo items ---");
       try {
         const mannCoItems = await fetchMannCoItems();

@@ -5,7 +5,9 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "npm run build && node dist/index.js"
+    "start": "npm run build && node dist/index.js",
+    "cs-trade": "npm run build && node dist/index.js --cs-trade-only",
+    "mannco": "npm run build && node dist/index.js --mannco-only"
   },
   "author": "Lucas Henrique Diniz Ostroski<lucas.diniz.hdo@gmail.com>",
   "license": "MIT",

@@ -143,7 +143,8 @@ async function setupApiInterception(page: puppeteer.Page, game: GameConfig, apiR
         const url = response.url();
 
         // Only process items/get API calls
-        if (url.includes("https://mannco.store/items/get?") {
+        // Fix the syntax error - missing closing parenthesis
+        if (url.includes("https://mannco.store/items/get?")) {
           try {
             // Extract the skip parameter from the URL
             const skipMatch = url.match(/skip=(\d+)/);
