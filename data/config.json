@@ -1,0 +1,24 @@
+{
+  "cs_trade": {
+    "enabled": true,
+    "watchTerms": [
+      "Howl",
+      "Dragon Lore",
+      "Butterfly Knife"
+    ],
+    "maxPrice": 15000
+  },
+  "mann_co": {
+    "enabled": true,
+    "watchTerms": [
+      "Unusual",
+      "Australium",
+      "Strange"
+    ],
+    "maxPrice": null
+  },
+  "discord": {
+    "username": "Item Watcher",
+    "avatarUrl": "https://i.imgur.com/oBPXx0D.png"
+  }
+}
