@@ -44,7 +44,7 @@ export function matchCsTradeItems(items: CsTradeItem[]): MatchedItem[] {
     return [];
   }
 
-  const { watchTerms, ignoredTerms, maxPrice } = config.cs_trade;
+  const { watchTerms, ignoredTerms, maxPrice, minPrice } = config.cs_trade;
   const results: MatchedItem[] = [];
 
   // Filter items by game, price, and ignore terms
@@ -54,6 +54,9 @@ export function matchCsTradeItems(items: CsTradeItem[]): MatchedItem[] {
 
     // Check price if maxPrice is specified
     if (maxPrice !== null && item.p > maxPrice) return false;
+
+    // Check price if minPrice is specified
+    if (minPrice !== null && item.p < minPrice) return false;
 
     // Check if it contains ignored terms
     if (item.n && typeof item.n === "string" && containsIgnoredTerm(item.n, ignoredTerms)) {
@@ -101,7 +104,7 @@ export function matchMannCoItems(items: MannCoItem[]): MatchedItem[] {
     return [];
   }
 
-  const { watchTerms, ignoredTerms, maxPrice, watchGames } = config.mann_co;
+  const { watchTerms, ignoredTerms, maxPrice, minPrice, watchGames } = config.mann_co;
   const results: MatchedItem[] = [];
 
   // Filter by game, price, and ignored terms
@@ -119,6 +122,9 @@ export function matchMannCoItems(items: MannCoItem[]): MatchedItem[] {
 
     // Check price if maxPrice is specified
     if (maxPrice !== null && item.price > maxPrice) return false;
+
+    // Check price if minPrice is specified
+    if (minPrice !== null && item.price < minPrice) return false;
 
     // Check if it contains ignored terms
     if (item.name && typeof item.name === "string" && containsIgnoredTerm(item.name, ignoredTerms)) {
@@ -145,6 +151,8 @@ export function matchMannCoItems(items: MannCoItem[]): MatchedItem[] {
           itemUrl: `https://mannco.store/item/${item.url}`,
           matchedTerm: term,
           game: game,
+          effect: item.effect || undefined,
+          effectUrl: item.effect_url || undefined,
         });
         console.log(`Matched MannCo item: ${item.name} (ID: ${item.id}, Game: ${game}) with term: ${term}`);
         break; // Once we match a term, no need to check other terms

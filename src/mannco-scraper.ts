@@ -167,6 +167,13 @@ async function setupApiInterception(page: puppeteer.Page, game: GameConfig, apiR
               return;
             }
 
+            // Convert price format from mannco (cents to dollars) and ensure effect_url is properly set
+            items = items.map((item) => ({
+              ...item,
+              price: item.price / 100, // Convert from cents to dollars
+              effect_url: item.effect_url || undefined, // Ensure effect_url is properly set if present
+            }));
+
             console.log(`Extracted ${items.length} items from API call with skip=${skipValue}`);
 
             // Add to our collection of responses
@@ -201,4 +208,63 @@ async function setupApiInterception(page: puppeteer.Page, game: GameConfig, apiR
 
     console.log(`Network interception set up for ${game.name}`);
   }
+}
+
+/**
+ * Directly scrape items from the page if API interception failed
+ */
+async function scrapeItemsFromPage(page: puppeteer.Page, game: GameConfig): Promise<MannCoItem[]> {
+  console.log(`Scraping items directly from page for ${game.name}`);
+  const items: MannCoItem[] = [];
+
+  try {
+    // Find all item elements
+    const itemElements = await page.$$(".item");
+    console.log(`Found ${itemElements.length} item elements on page`);
+
+    for (const element of itemElements) {
+      try {
+        // Extract item data using page.evaluate
+        const item = await page.evaluate(
+          (el, gameName) => {
+            const id = parseInt(el.getAttribute("data-id") || "0");
+            const name = el.querySelector(".item-name")?.textContent?.trim() || "";
+            const priceText = el.querySelector(".item-price")?.textContent?.trim().replace("$", "") || "0";
+
+            // Convert price to cents first, then divide by 100 for dollars
+            const priceInCents = parseInt(priceText.replace(".", ""));
+            const price = priceInCents / 100;
+
+            const image = el.querySelector("img")?.getAttribute("src") || "";
+            const url = el.querySelector("a")?.getAttribute("href") || "";
+            const quality = el.getAttribute("data-quality") || "";
+            const effect = el.getAttribute("data-effect") || "";
+            const effectUrl = el.querySelector(".effect img")?.getAttribute("src") || "";
+
+            return {
+              id,
+              name,
+              price,
+              image,
+              url,
+              quality,
+              effect,
+              effect_url: effectUrl,
+              _game: gameName,
+            };
+          },
+          element,
+          game.name
+        );
+
+        items.push(item);
+      } catch (err) {
+        console.error(`Error extracting item data for ${game.name}:`, err);
+      }
+    }
+  } catch (error) {
+    console.error(`Error scraping items from page for ${game.name}:`, error);
+  }
+
+  return items;
 }

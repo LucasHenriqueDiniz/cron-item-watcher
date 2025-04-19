@@ -20,6 +20,7 @@ export interface MannCoItem {
   url: string;
   quality: string;
   effect: string;
+  effect_url?: string; // URL for the effect image
   _game?: string; // Custom property to track game
   // Other properties might be present
 }
@@ -31,6 +32,7 @@ export interface WatchConfig {
     watchTerms: string[];
     ignoredTerms: string[]; // Terms to ignore/exclude
     maxPrice: number | null;
+    minPrice: number | null; // Minimum price threshold
     watchGames: {
       tf2: boolean; // 440
       cs2: boolean; // 730
@@ -44,6 +46,7 @@ export interface WatchConfig {
     watchTerms: string[];
     ignoredTerms: string[]; // Terms to ignore/exclude
     maxPrice: number | null;
+    minPrice: number | null; // Minimum price threshold
     watchGames: {
       tf2: boolean; // 440
       cs2: boolean; // 730
@@ -73,6 +76,8 @@ export interface MatchedItem {
   itemUrl?: string;
   matchedTerm: string;
   game?: string; // Game identifier (tf2, cs2, etc.)
+  effect?: string; // Effect name
+  effectUrl?: string; // URL for effect image
 }
 
 // Game ID mappings
@@ -89,4 +94,13 @@ export const MANNCO_GAME_URLS = {
   cs2: "cs2",
   dota2: "dota2",
   rust: "rust",
+};
+
+// Game emojis for Discord messages
+export const GAME_EMOJIS = {
+  tf2: "🎩", // Hat for Team Fortress 2
+  cs2: "🔫", // Gun for Counter-Strike 2
+  dota2: "⚔️", // Swords for Dota 2
+  rust: "🏠", // House for Rust
+  unknown: "🎮", // Generic game controller for unknown games
 };

@@ -9,9 +9,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const defaultConfig: WatchConfig = {
   cs_trade: {
     enabled: true,
-    watchTerms: ["Howl", "Dragon Lore", "Butterfly Knife"],
+    watchTerms: ["Dragon Lore", "Unusual"],
     ignoredTerms: ["Graffiti", "Sticker", "Case"],
-    maxPrice: 150000, // Set a price limit in dollars
+    maxPrice: null, // Set a price limit in dollars ex 150000
+    minPrice: 0, // Minimum price to consider (0 = no minimum)
     watchGames: {
       tf2: true, // 440
       cs2: true, // 730
@@ -22,9 +23,10 @@ const defaultConfig: WatchConfig = {
 
   mann_co: {
     enabled: true,
-    watchTerms: ["Unusual", "Australium", "Strange"],
+    watchTerms: ["Australium", "Unusual"],
     ignoredTerms: ["Graffiti", "Case"],
     maxPrice: null, // No price limit
+    minPrice: 0, // Minimum price to consider (0 = no minimum)
     watchGames: {
       tf2: true, // 440
       cs2: false, // 730
@@ -55,6 +57,7 @@ try {
         watchTerms: loadedConfig.cs_trade?.watchTerms ?? defaultConfig.cs_trade.watchTerms,
         ignoredTerms: loadedConfig.cs_trade?.ignoredTerms ?? defaultConfig.cs_trade.ignoredTerms,
         maxPrice: loadedConfig.cs_trade?.maxPrice ?? defaultConfig.cs_trade.maxPrice,
+        minPrice: loadedConfig.cs_trade?.minPrice ?? defaultConfig.cs_trade.minPrice, // Add minPrice
         watchGames: loadedConfig.cs_trade?.watchGames ?? defaultConfig.cs_trade.watchGames,
       },
       mann_co: {
@@ -62,6 +65,7 @@ try {
         watchTerms: loadedConfig.mann_co?.watchTerms ?? defaultConfig.mann_co.watchTerms,
         ignoredTerms: loadedConfig.mann_co?.ignoredTerms ?? defaultConfig.mann_co.ignoredTerms,
         maxPrice: loadedConfig.mann_co?.maxPrice ?? defaultConfig.mann_co.maxPrice,
+        minPrice: loadedConfig.mann_co?.minPrice ?? defaultConfig.mann_co.minPrice, // Add minPrice
         watchGames: loadedConfig.mann_co?.watchGames ?? defaultConfig.mann_co.watchGames,
       },
       discord: {

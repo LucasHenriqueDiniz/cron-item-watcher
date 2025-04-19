@@ -27,13 +27,13 @@ You can customize the following in `data/config.json`:
 
   - Games to watch: TF2, CS2, Dota 2, and Rust
   - Watch terms and terms to ignore
-  - Maximum price threshold
+  - Maximum and minimum price thresholds
 
 - MannCo settings:
 
   - Games to watch: TF2, CS2, Dota 2, and Rust
   - Watch terms and terms to ignore
-  - Maximum price threshold
+  - Maximum and minimum price thresholds
 
 - Discord webhook appearance (username and avatar)
 

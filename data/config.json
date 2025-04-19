@@ -1,0 +1,32 @@
+{
+  "cs_trade": {
+    "enabled": true,
+    "watchTerms": ["Dragon Lore", "Unusual"],
+    "ignoredTerms": ["Graffiti", "Sticker", "Case"],
+    "maxPrice": null,
+    "minPrice": 0,
+    "watchGames": {
+      "tf2": true,
+      "cs2": true,
+      "dota2": false,
+      "rust": false
+    }
+  },
+  "mann_co": {
+    "enabled": true,
+    "watchTerms": ["Australium", "Unusual"],
+    "ignoredTerms": ["Graffiti", "Case"],
+    "maxPrice": null,
+    "minPrice": 0,
+    "watchGames": {
+      "tf2": true,
+      "cs2": false,
+      "dota2": false,
+      "rust": false
+    }
+  },
+  "discord": {
+    "username": "Item Watcher",
+    "avatarUrl": "https://i.imgur.com/oBPXx0D.png"
+  }
+}
