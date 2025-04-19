@@ -181,9 +181,8 @@ async function setupApiInterception(page: puppeteer.Page, game: GameConfig, apiR
   console.log(`Network interception set up for ${game.name}`);
 }
 
-/**
- * Auto-scroll to the bottom of the page to trigger lazy loading
- */
+// Keep autoScroll as a utility function but don't call it
+// It can be useful in the future if needed
 async function autoScroll(page: puppeteer.Page): Promise<void> {
   console.log("Auto-scrolling page to trigger lazy loading");
   await page.evaluate(async () => {

@@ -30,28 +30,58 @@ async function main() {
   console.log("========================================");
 
   // Log configuration
-  console.log("Current configuration:");
-  console.log(`- CS.Trade enabled: ${config.cs_trade.enabled}`);
-  if (config.cs_trade.enabled) {
-    const enabledGames = Object.entries(config.cs_trade.watchGames)
-      .filter(([_, enabled]) => enabled)
-      .map(([game]) => game.toUpperCase());
+  console.log("Current configuration:", config);
+  console.log(`- CS.Trade enabled: ${config?.cs_trade?.enabled}`);
 
-    console.log(`  * Watch games: ${enabledGames.join(", ")}`);
-    console.log(`  * Watch terms: ${config.cs_trade.watchTerms.join(", ")}`);
-    console.log(`  * Ignore terms: ${config.cs_trade.ignoredTerms.join(", ")}`);
+  // Check if CS.Trade configuration exists and is enabled
+  if (config?.cs_trade?.enabled) {
+    // Safely check if watchGames exists before trying to use Object.entries
+    if (config.cs_trade.watchGames) {
+      const enabledGames = Object.entries(config.cs_trade.watchGames)
+        .filter(([_, enabled]) => enabled)
+        .map(([game]) => game.toUpperCase());
+
+      console.log(`  * Watch games: ${enabledGames.join(", ")}`);
+    } else {
+      console.error("CS.Trade watchGames configuration is missing or invalid");
+    }
+
+    // Safely log other configuration values
+    if (config.cs_trade.watchTerms) {
+      console.log(`  * Watch terms: ${config.cs_trade.watchTerms.join(", ")}`);
+    }
+
+    if (config.cs_trade.ignoredTerms) {
+      console.log(`  * Ignore terms: ${config.cs_trade.ignoredTerms.join(", ")}`);
+    }
+
     console.log(`  * Max price: ${config.cs_trade.maxPrice !== null ? `$${config.cs_trade.maxPrice}` : "No limit"}`);
   }
 
-  console.log(`- MannCo enabled: ${config.mann_co.enabled}`);
-  if (config.mann_co.enabled) {
-    const enabledGames = Object.entries(config.mann_co.watchGames)
-      .filter(([_, enabled]) => enabled)
-      .map(([game]) => game.toUpperCase());
+  console.log(`- MannCo enabled: ${config?.mann_co?.enabled}`);
 
-    console.log(`  * Watch games: ${enabledGames.join(", ")}`);
-    console.log(`  * Watch terms: ${config.mann_co.watchTerms.join(", ")}`);
-    console.log(`  * Ignore terms: ${config.mann_co.ignoredTerms.join(", ")}`);
+  // Check if MannCo configuration exists and is enabled
+  if (config?.mann_co?.enabled) {
+    // Safely check if watchGames exists before trying to use Object.entries
+    if (config.mann_co.watchGames) {
+      const enabledGames = Object.entries(config.mann_co.watchGames)
+        .filter(([_, enabled]) => enabled)
+        .map(([game]) => game.toUpperCase());
+
+      console.log(`  * Watch games: ${enabledGames.join(", ")}`);
+    } else {
+      console.error("MannCo watchGames configuration is missing or invalid");
+    }
+
+    // Safely log other configuration values
+    if (config.mann_co.watchTerms) {
+      console.log(`  * Watch terms: ${config.mann_co.watchTerms.join(", ")}`);
+    }
+
+    if (config.mann_co.ignoredTerms) {
+      console.log(`  * Ignore terms: ${config.mann_co.ignoredTerms.join(", ")}`);
+    }
+
     console.log(`  * Max price: ${config.mann_co.maxPrice !== null ? `$${config.mann_co.maxPrice}` : "No limit"}`);
   }
 
@@ -70,7 +100,7 @@ async function main() {
     const newMatchedItems = [];
 
     // Process CS.Trade items if enabled
-    if (config.cs_trade.enabled) {
+    if (config?.cs_trade?.enabled) {
       console.log("\n--- Processing CS.Trade items ---");
       try {
         const csTradeItems = await fetchCsTradeItems();
@@ -100,7 +130,7 @@ async function main() {
     }
 
     // Process MannCo items if enabled
-    if (config.mann_co.enabled) {
+    if (config?.mann_co?.enabled) {
       console.log("\n--- Processing MannCo items ---");
       try {
         const mannCoItems = await fetchMannCoItems();
