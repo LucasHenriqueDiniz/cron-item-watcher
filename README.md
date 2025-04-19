@@ -26,6 +26,20 @@ You can customize the following in `data/config.json`:
 - Maximum price thresholds
 - Discord webhook appearance
 
+## Known Issues
+
+### MannCo API Access
+
+MannCo.Store uses CloudFlare protection which may block requests from GitHub Actions servers. If you see 403 errors in the logs, consider one of these solutions:
+
+1. **Proxy Service**: Set up a proxy server to relay requests
+2. **Self-hosted Runner**: Run GitHub Actions on your own server
+3. **Alternative Approach**: Create a separate application that runs on your local machine or a VPS
+
+### CS.Trade API Format
+
+The CS.Trade API response format may change over time. If you see errors related to invalid data format, check the logs for details about the current structure and update the code accordingly.
+
 ## License
 
 MIT
