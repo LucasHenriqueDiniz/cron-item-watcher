@@ -96,11 +96,20 @@ export const MANNCO_GAME_URLS = {
   rust: "rust",
 };
 
-// Game emojis for Discord messages
+// Game emojis for Discord messages - using custom Discord emoji format
 export const GAME_EMOJIS = {
-  tf2: "🎩", // Hat for Team Fortress 2
-  cs2: "🔫", // Gun for Counter-Strike 2
-  dota2: "⚔️", // Swords for Dota 2
-  rust: "🏠", // House for Rust
-  unknown: "🎮", // Generic game controller for unknown games
+  tf2: "<:tf2:1063141924673966221>", // Replace with actual emoji ID from your Discord server
+  cs2: "<:CS2:1148239924064165948>", // Replace with actual emoji ID from your Discord server
+  dota2: "<:dota2:1063141908953694239>", // Replace with actual emoji ID from your Discord server
+  rust: "<:rust:1019728503882645547>", // Replace with actual emoji ID from your Discord server
+  mannco: "<:manncoCoins:1153146552328663050>", // Replace with actual emoji ID
+  unknown: "🎮", // Fallback to Unicode emoji
+};
+
+export const MESSAGE_EMOJIS = {
+  mannco: "<:manncoCoins:1153146552328663050>", // Replace with actual emoji ID
+  cs_trade: "<:csmoney:1176343313247383633>", // Replace with actual emoji ID
+  blue_arrow: "<:BlueArrow:1164763220611973182>", // Replace with actual emoji ID
+  blue_dot: "<:b_dot2:1163636601126133832>", // Replace with actual emoji ID
+  unknown: "❓", // Fallback to Unicode emoji
 };
