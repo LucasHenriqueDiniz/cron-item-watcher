@@ -66,7 +66,7 @@ export async function sendDiscordNotification(items: MatchedItem[]): Promise<voi
       if (item.itemUrl) {
         // Create a JSON structure that includes both embed and components
         const webhookData = {
-          embeds: [embed.embeds[0]],
+          embeds: [embed.embeds[0] || {}],
           components: [
             {
               type: 1, // Action Row
