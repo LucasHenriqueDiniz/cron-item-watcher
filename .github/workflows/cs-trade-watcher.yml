@@ -9,7 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write # Required for pushing commits
-    timeout-minutes: 5 # Shorter timeout since we're only checking CS.Trade
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
