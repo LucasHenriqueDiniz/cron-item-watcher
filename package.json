@@ -1,23 +1,33 @@
 {
   "name": "cron-item-watcher",
   "version": "1.0.0",
-  "description": "Watch for specific items on trading websites and notify via Discord webhook",
+  "description": "Watches for new items on various marketplaces",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "npm run build && node dist/index.js",
-    "cs-trade": "npm run build && node dist/index.js --cs-trade-only",
-    "mannco": "npm run build && node dist/index.js --mannco-only"
+    "start": "node dist/index.js",
+    "start:server": "node dist/server.js",
+    "dev": "tsc && node dist/index.js",
+    "dev:server": "tsc && node dist/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "tsc -w",
+    "test:db": "tsc && node dist/test-database.js",
+    "check:db": "tsc && node dist/check-database.js",
+    "init:db": "tsc && node -e \"import('./dist/database.js').then(db => db.initDatabase().then(() => console.log('Database initialized successfully')).catch(err => console.error('Error:', err)))\""
   },
   "author": "Lucas Henrique Diniz Ostroski<lucas.diniz.hdo@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "@types/express": "^5.0.2",
     "axios": "^1.8.4",
     "cheerio": "^1.0.0",
     "discord-webhook-node": "^1.1.8",
+    "dotenv": "^16.0.3",
     "form-data": "^4.0.0",
     "node-fetch": "^3.3.2",
-    "puppeteer": "^24.6.1"
+    "puppeteer": "^24.6.1",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
     "@types/node": "^22.14.1",

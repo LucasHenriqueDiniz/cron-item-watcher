@@ -62,7 +62,7 @@ export async function fetchCsTradeItems(): Promise<CsTradeItem[]> {
 }
 
 /**
- * Fetch MannCo items using web scraping
+ * Fetch MannCo items using web scraping (original implementation)
  */
 export async function fetchMannCoItems(): Promise<MannCoItem[]> {
   // Check if configuration exists and is valid
@@ -114,9 +114,7 @@ export async function fetchMannCoItems(): Promise<MannCoItem[]> {
 
     if (items.length === 0 && retries === maxRetries) {
       console.warn(`MannCo scraping failed after ${maxRetries} attempts.`);
-    }
-
-    return items;
+    }    return items;
   } catch (error) {
     console.error("Error fetching MannCo items:", error);
     return [];

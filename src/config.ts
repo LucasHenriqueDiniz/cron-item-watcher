@@ -2,6 +2,10 @@ import { WatchConfig } from "./types.js";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import dotenv from 'dotenv';
+
+// Carregar variáveis de ambiente do arquivo .env
+dotenv.config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 

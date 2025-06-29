@@ -1,28 +1,32 @@
 export interface CsTradeItem {
   id: string;
-  a: string; // AppID (730 for CS2)
-  n: string; // Name
-  p: number; // Price
-  c: string; // Color
-  s: string; // StatTrak?
-  t: string; // Type
-  nd: string; // Base name
-  wn: string; // Wear name (FT, MW, etc)
-  w: string; // Wear value (float)
-  // Other properties might be present
+  n: string; // nome
+  p: number; // preço
+  image?: string;
+  itemUrl?: string;
+  game?: string;
+  effect?: string;
+  effectId?: number;
+  [key: string]: any; // outros campos
 }
 
 export interface MannCoItem {
   id: number;
   name: string;
   price: number;
-  image: string;
-  url: string;
-  quality: string;
-  effect: string;
-  effect_url?: string; // URL for the effect image
-  _game?: string; // Custom property to track game
-  // Other properties might be present
+  image?: string;
+  imageUrl?: string;
+  itemUrl?: string;
+  game?: string;
+  effect?: string;
+  effectId?: number;
+  effectUrl?: string;
+  // New fields for Steam inventory items
+  steamId?: string;
+  assetId?: string;
+  classId?: string;
+  instanceId?: string;
+  [key: string]: any; // outros campos
 }
 
 export interface WatchConfig {
@@ -113,3 +117,23 @@ export const MESSAGE_EMOJIS = {
   blue_dot: "<:b_dot2:1163636601126133832>", // Replace with actual emoji ID
   unknown: "❓", // Fallback to Unicode emoji
 };
+
+// Novo tipo para unificar o armazenamento no banco de dados
+export interface DbItem {
+  id: string;
+  name: string;
+  price: number;
+  imageUrl?: string;
+  itemUrl?: string;
+  game?: string;
+  effect?: string;
+  effectId?: number;
+  data: string; // Para armazenar dados adicionais em JSON
+}
+
+// Novo tipo para efeito (nova tabela)
+export interface Effect {
+  id: number;
+  name: string;
+  imageUrl?: string;
+}

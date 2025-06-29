@@ -1,8 +1,14 @@
 import { fetchCsTradeItems, fetchMannCoItems } from "./api.js";
-import { loadStoredData, saveStoredData, findNewCsTradeItems, findNewMannCoItems, updateStoredData } from "./dataStorage.js";
+import { loadStoredData, saveStoredData, findNewCsTradeItems, findNewMannCoItems, updateStoredData, cleanupOldItems } from "./dataStorage.js";
 import { matchCsTradeItems, matchMannCoItems } from "./matcher.js";
 import { sendDiscordNotification } from "./notifier.js";
 import config from "./config.js";
+import { initDatabase } from "./database.js";
+
+// Export a function that can be called by the server
+export async function runItemCheck(csTradeOnly = false, manncoOnly = false) {
+  return await main(csTradeOnly, manncoOnly);
+}
 
 // Check for required environment variables
 function checkEnvironment() {
@@ -20,19 +26,30 @@ function checkEnvironment() {
     console.warn("MANNCO_COOKIE environment variable not set. MannCo.store requests might be blocked by Cloudflare.");
   }
 
-  console.log("All required environment variables are present");
-  return true;
+  console.log("All required environment variables are present");  return true;
 }
 
-async function main() {
+async function main(csTradeOnly = false, manncoOnly = false) {
   console.log("========================================");
   console.log(`Starting item watcher at ${new Date().toISOString()}`);
   console.log("========================================");
 
-  // Handle command-line flags for running specific sources only
-  const args = process.argv.slice(2);
-  const csTradeOnly = args.includes("--cs-trade-only");
-  const manncoOnly = args.includes("--mannco-only");
+  // Initialize database before proceeding
+  try {
+    console.log("Initializing database...");
+    await initDatabase();
+    console.log("Database initialized successfully");
+  } catch (error) {
+    console.error("Error initializing database:", error);
+    return;
+  }
+
+  // If called from command line, use flags
+  if (!csTradeOnly && !manncoOnly) {
+    const args = process.argv.slice(2);
+    csTradeOnly = args.includes("--cs-trade-only");
+    manncoOnly = args.includes("--mannco-only");
+  }
 
   // If neither flag is set, run both as usual
   const runCsTrade = csTradeOnly || (!csTradeOnly && !manncoOnly);
@@ -117,7 +134,7 @@ async function main() {
 
   try {
     // Load stored data
-    const storedData = loadStoredData();
+    const storedData = await loadStoredData();
     console.log(`Last update: ${storedData.lastUpdate}`);
 
     // Fetch current items
@@ -130,8 +147,8 @@ async function main() {
         const csTradeItems = await fetchCsTradeItems();
 
         if (csTradeItems && csTradeItems.length > 0) {
-          // Find new items
-          const newCsTradeItems = findNewCsTradeItems(csTradeItems, storedData.cs_trade);
+          // Find new items - removido o segundo parâmetro que não é mais necessário
+          const newCsTradeItems = await findNewCsTradeItems(csTradeItems);
           console.log(`Found ${newCsTradeItems.length} new or updated CS.Trade items out of ${csTradeItems.length} total items`);
 
           // Match against watch terms
@@ -144,6 +161,12 @@ async function main() {
             Object.assign(storedData, updateStoredData(storedData, newCsTradeItems, []));
           } else {
             console.log("No new CS.Trade items to process");
+          }
+
+          // Periodically clean up old items (once a day, adjusted probability)
+          if (Math.random() < 0.1) {
+            console.log("Running periodic cleanup of old items...");
+            await cleanupOldItems(30); // Keep last 30 days of data
           }
         } else {
           console.warn("No CS.Trade items retrieved or invalid response format");
@@ -160,8 +183,8 @@ async function main() {
         const mannCoItems = await fetchMannCoItems();
 
         if (mannCoItems && mannCoItems.length > 0) {
-          // Find new items
-          const newMannCoItems = findNewMannCoItems(mannCoItems, storedData.mann_co);
+          // Find new items - adicionando await aqui
+          const newMannCoItems = await findNewMannCoItems(mannCoItems);
           console.log(`Found ${newMannCoItems.length} new or updated MannCo items out of ${mannCoItems.length} total items`);
 
           // Match against watch terms
@@ -196,7 +219,7 @@ async function main() {
     }
 
     // Save updated data (even if there was an error, save what we have)
-    saveStoredData(storedData);
+    await saveStoredData(storedData); // Adicionando await aqui também
     console.log("\n========================================");
     console.log(`Item watcher finished at ${new Date().toISOString()}`);
     console.log("========================================");
